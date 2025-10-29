@@ -1,0 +1,78 @@
+<div class="container mt-3">
+  <!-- Blog Details Card -->
+  <div class="card mb-4" *ngIf="blog">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">{{ blog.title }}</h2>
+      <button class="btn btn-light btn-sm" routerLink="/blogs">Back to Blogs</button>
+    </div>
+    <div class="card-body">
+      <p class="lead">{{ blog.content }}</p>
+      <div class="text-muted">
+        <small>By {{ blog.author || 'Unknown' }} - {{ blog.createdAt | date:'medium' }}</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="card">
+    <div class="card-header bg-secondary text-white">
+      <h3 class="mb-0">Comments ({{ comments.length }})</h3>
+    </div>
+    <div class="card-body">
+      <!-- Add Comment Form -->
+      <div class="mb-4 border p-3 rounded">
+        <h4>Add a Comment</h4>
+        <div class="alert alert-success alert-dismissible fade show" *ngIf="showSuccess" role="alert">
+          {{ successMessage }}
+          <button type="button" class="btn-close" (click)="showSuccess = false" aria-label="Close"></button>
+        </div>
+        
+        <form #commentForm="ngForm" (ngSubmit)="addComment()">
+          <div class="mb-3">
+            <label for="content" class="form-label">Comment *</label>
+            <textarea class="form-control" id="content" name="content" rows="3" required 
+                      [(ngModel)]="newComment.content" #content="ngModel"></textarea>
+            <div class="text-danger" *ngIf="content.invalid && content.touched">
+              Comment content is required
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="author" class="form-label">Name</label>
+              <input type="text" class="form-control" id="author" name="author" 
+                    [(ngModel)]="newComment.author">
+            </div>
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" 
+                    [(ngModel)]="newComment.email">
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" >Post Comment</button>
+        </form>
+      </div>
+
+      <!-- Comments List -->
+      <div class="mt-4">
+        <div *ngIf="comments.length === 0" class="alert alert-info">
+          No comments yet. Be the first to comment!
+        </div>
+        
+        <div *ngFor="let comment of comments" 
+             class="card mb-3 border-0 shadow-sm" 
+             [ngClass]="{'border-success border-2': comment.id === newCommentId}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <h5 class="mb-1">{{ comment.author || 'Anonymous' }}</h5>
+              <button class="btn btn-sm btn-danger" (click)="deleteComment(comment.id)">Delete</button>
+            </div>
+            <small class="text-muted">{{ comment.createdAt | date:'medium' }}</small>
+            <p class="mt-2">{{ comment.content }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

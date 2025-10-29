@@ -1,0 +1,67 @@
+<div class="container mt-3">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">{{ searchMode === 'title' ? 'Search Blogs by Title' : 'Search Blogs by Author' }}</h2>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 offset-md-3 mb-4">
+          <div class="input-group">
+            <input type="text" class="form-control" 
+                   placeholder="{{ searchMode === 'title' ? 'Enter title to search' : 'Enter author name to search' }}" 
+                   [(ngModel)]="searchTerm">
+            <button class="btn btn-primary" type="button" (click)="onSearch()">Search</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-4">
+        <!-- Results Table -->
+        <div class="table-responsive" *ngIf="blogs.length > 0">
+          <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let blog of blogs">
+                <td>{{ blog.id }}</td>
+                <td>{{ blog.title }}</td>
+                <td>{{ blog.author }}</td>
+                <td>{{ blog.createdAt | date:'medium' }}</td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-info me-1" (click)="viewComments(blog.id)">Comments</button>
+                    <button class="btn btn-sm btn-warning me-1" (click)="updateBlog(blog.id)">Edit</button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteBlog(blog.id)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- No Results Message -->
+        <div class="alert alert-info" *ngIf="searchTerm && blogs.length === 0">
+          No blogs found matching your search criteria.
+        </div>
+        
+        <!-- Instructions Message -->
+        <div class="alert alert-secondary" *ngIf="!searchTerm">
+          {{ searchMode === 'title' ? 
+             'Enter a blog title in the search box above to find matching blogs.' : 
+             'Enter an author name in the search box above to find their blogs.' }}
+        </div>
+      </div>
+      
+      <div class="mt-3">
+        <button class="btn btn-secondary" routerLink="/blogs">Back to All Blogs</button>
+      </div>
+    </div>
+  </div>
+</div>

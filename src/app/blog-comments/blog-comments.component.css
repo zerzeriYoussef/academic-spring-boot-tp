@@ -1,0 +1,15 @@
+/* Styles for highlighting new comments */
+.border-success.border-2 {
+  border: 2px solid #28a745 !important;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+  animation: highlight-fade 5s ease;
+}
+
+@keyframes highlight-fade {
+  0%, 70% {
+    background-color: rgba(40, 167, 69, 0.1);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

@@ -1,0 +1,39 @@
+<div class="container mt-3">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Add New Blog</h2>
+    </div>
+    <div class="card-body">
+      <form #blogForm="ngForm" (ngSubmit)="addBlog()">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title *</label>
+          <input type="text" class="form-control" id="title" name="title" required 
+                 [(ngModel)]="newBlog.title" #title="ngModel">
+          <div class="text-danger" *ngIf="title.invalid && title.touched">
+            Title is required
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="content" class="form-label">Content *</label>
+          <textarea class="form-control" id="content" name="content" rows="5" required 
+                    [(ngModel)]="newBlog.content" #content="ngModel"></textarea>
+          <div class="text-danger" *ngIf="content.invalid && content.touched">
+            Content is required
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="author" class="form-label">Author</label>
+          <input type="text" class="form-control" id="author" name="author" 
+                 [(ngModel)]="newBlog.author">
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="blogForm.invalid">Save Blog</button>
+          <button type="button" class="btn btn-secondary" routerLink="/blogs">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
