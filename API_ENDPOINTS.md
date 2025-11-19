@@ -187,4 +187,4 @@ curl http://localhost:8080/api/blogs/1/with-comments
 1. Make sure MySQL is running and create a database named `demo`
 2. Update the database credentials in `application.properties` if needed
 3. Run the application: `mvn spring-boot:run`
-4. The API will be available at `http://localhost:8080`
+4. The API will be available at `http://localhost:8081`

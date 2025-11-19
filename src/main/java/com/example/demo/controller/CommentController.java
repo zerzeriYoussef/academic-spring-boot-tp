@@ -13,15 +13,36 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CommentController {
     
     private final CommentService commentService;
     
-    // Create a new comment for a specific blog
+    // Create a new comment for a specific blog (JSON body)
     @PostMapping("/blog/{blogId}")
     public ResponseEntity<Comment> createComment(@PathVariable("blogId") Long blogId, @RequestBody Comment comment) {
         try {
+            Comment createdComment = commentService.createComment(blogId, comment);
+            return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Create a new comment for a specific blog using query parameters
+    @PostMapping(value = "/blog/{blogId}", params = {"content"})
+    public ResponseEntity<Comment> createCommentWithParams(
+            @PathVariable("blogId") Long blogId,
+            @RequestParam("content") String content,
+            @RequestParam(value = "author", required = false) String author,
+            @RequestParam(value = "email", required = false) String email) {
+        try {
+            Comment comment = new Comment();
+            comment.setContent(content);
+            comment.setAuthor(author);
+            comment.setEmail(email);
             Comment createdComment = commentService.createComment(blogId, comment);
             return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
         } catch (RuntimeException e) {

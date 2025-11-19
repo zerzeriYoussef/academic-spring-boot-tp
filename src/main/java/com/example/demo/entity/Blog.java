@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.List;
 @Table(name = "blogs")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Blog {
     
     @Id
@@ -41,6 +41,7 @@ public class Blog {
     
     // One-to-Many relationship with Comment
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
     
     // Helper method to add comment

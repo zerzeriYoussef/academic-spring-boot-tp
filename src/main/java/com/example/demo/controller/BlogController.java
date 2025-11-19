@@ -13,7 +13,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/blogs")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class BlogController {
     
     private final BlogService blogService;
@@ -22,6 +22,24 @@ public class BlogController {
     @PostMapping
     public ResponseEntity<Blog> createBlog(@RequestBody Blog blog) {
         try {
+            Blog createdBlog = blogService.createBlog(blog);
+            return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Create a new blog using query parameters
+    @PostMapping(params = {"title", "content"})
+    public ResponseEntity<Blog> createBlogWithParams(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "author", required = false) String author) {
+        try {
+            Blog blog = new Blog();
+            blog.setTitle(title);
+            blog.setContent(content);
+            blog.setAuthor(author);
             Blog createdBlog = blogService.createBlog(blog);
             return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -43,7 +61,7 @@ public class BlogController {
         }
     }
     
-    // Get all blogs with comments
+   
     @GetMapping("/with-comments")
     public ResponseEntity<List<Blog>> getAllBlogsWithComments() {
         try {

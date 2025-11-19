@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Blog;
 import com.example.demo.entity.Comment;
 import com.example.demo.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +20,11 @@ public class CommentService {
     
     // Create a new comment
     public Comment createComment(Long blogId, Comment comment) {
-        // Verify blog exists
-        if (!blogService.blogExists(blogId)) {
-            throw new RuntimeException("Blog not found with id: " + blogId);
-        }
+        // Create a minimal blog object with just the ID
+        Blog blog = new Blog();
+        blog.setId(blogId);
+        comment.setBlog(blog);
         
-        // Set the blog reference
-        comment.getBlog().setId(blogId);
         return commentRepository.save(comment);
     }
     
@@ -61,7 +60,7 @@ public class CommentService {
         comment.setContent(commentDetails.getContent());
         comment.setAuthor(commentDetails.getAuthor());
         comment.setEmail(commentDetails.getEmail());
-        
+        comment.setBlog(commentDetails.getBlog());
         return commentRepository.save(comment);
     }
     
