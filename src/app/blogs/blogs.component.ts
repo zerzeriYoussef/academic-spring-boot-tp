@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { BlogService } from '../services/blog.service';
 import { Blog } from '../model/blog.model';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-blogs',
@@ -17,7 +18,9 @@ export class BlogsComponent implements OnInit {
   
   constructor(
     private blogService: BlogService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
+
   ) {}
   
   ngOnInit(): void {

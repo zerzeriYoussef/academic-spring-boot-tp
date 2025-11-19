@@ -1,79 +1,74 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '../model/user.model';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // Base de données d'utilisateurs (simulation)
-  users: User[] = [
-    { username: "admin", password: "123", roles: ['ADMIN'] },
-    { username: "user", password: "123", roles: ['USER'] }
-  ];
+  apiURL: string = 'http://localhost:8083/users';
+  token!: string;
 
-  public loggedUser!: string;
-  public isloggedIn: Boolean = false;
-  public roles!: string[];
+  public loggedUser: string | null = null;
+  public isloggedIn: boolean = false;
+  public roles: string[] | null = null;
 
-  constructor(private router: Router) { }
+  private helper = new JwtHelperService();
 
-  // Méthode de déconnexion
-  logout() {
-    this.isloggedIn = false;
-    this.loggedUser = undefined!;
-    this.roles = undefined!;
-    localStorage.removeItem('loggedUser');
-    localStorage.setItem('isloggedIn', String(this.isloggedIn));
-    this.router.navigate(['/login']);
-    console.log('👋 Déconnexion');
+  constructor(private router: Router, private http: HttpClient) { }
+
+  login(user: User): Observable<HttpResponse<any>> {
+    return this.http.post(this.apiURL + '/login', user, { observe: 'response' });
   }
 
-  // Méthode de connexion
-  SignIn(user: User): Boolean {
-    let validUser: Boolean = false;
-
-    this.users.forEach((curUser) => {
-      if (user.username == curUser.username && user.password == curUser.password) {
-        validUser = true;
-        this.loggedUser = curUser.username;
-        this.isloggedIn = true;
-        this.roles = curUser.roles;
-
-        // Sauvegarder dans LocalStorage
-        localStorage.setItem('loggedUser', this.loggedUser);
-        localStorage.setItem('isloggedIn', String(this.isloggedIn));
-
-        console.log('✅ Utilisateur connecté:', this.loggedUser);
-        console.log('🔑 Rôles:', this.roles);
-      }
-    });
-
-    return validUser;
-  }
-
-  // Vérifier si l'utilisateur est Admin
-  isAdmin(): Boolean {
-    if (!this.roles) {
-      return false;
-    }
-    return (this.roles.indexOf('ADMIN') > -1);
-  }
-
-  // Restaurer l'utilisateur depuis LocalStorage
-  setLoggedUserFromLocalStorage(login: string) {
-    this.loggedUser = login;
+  saveToken(jwt: string): void {
+    localStorage.setItem('jwt', jwt);
+    this.token = jwt;
     this.isloggedIn = true;
-    this.getUserRoles(login);
-    console.log('🔄 Session restaurée pour:', login);
+    this.decodeJWT();
   }
 
-  // Récupérer les rôles d'un utilisateur
-  getUserRoles(username: string) {
-    this.users.forEach((curUser) => {
-      if (curUser.username == username) {
-        this.roles = curUser.roles;
-      }
-    });
+  decodeJWT(): void {
+    if (this.token == undefined)
+      return;
+
+    const decodedToken = this.helper.decodeToken(this.token);
+    this.roles = decodedToken.roles;
+    this.loggedUser = decodedToken.sub;
+    this.isloggedIn = true;
+  }
+
+  loadToken(): void {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      this.token = jwt;
+      this.decodeJWT();
+    }
+  }
+
+  getToken(): string {
+    return this.token;
+  }
+
+  isAdmin(): Boolean {
+    if (!this.roles)
+      return false;
+    return this.roles.indexOf('ADMIN') >= 0;
+  }
+
+  isTokenExpired(): Boolean {
+    return this.helper.isTokenExpired(this.token);
+  }
+
+  logout(): void {
+    this.loggedUser = null;
+    this.roles = null;
+    this.token = undefined!;
+    this.isloggedIn = false;
+    localStorage.removeItem('jwt');
+    this.router.navigate(['/login']);
   }
 }

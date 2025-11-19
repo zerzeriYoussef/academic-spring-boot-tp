@@ -23,12 +23,13 @@
               <td>{{ blog.title }}</td>
               <td>{{ blog.author }}</td>
               <td>{{ blog.createdAt | date:'medium' }}</td>
-              <td>
+              <td> @if(authService.isAdmin()) {
                 <div class="btn-group">
+                  
                   <button class="btn btn-sm btn-info me-1" (click)="viewComments(blog.id)">Comments</button>
                   <button class="btn btn-sm btn-warning me-1" (click)="updateBlog(blog.id)">Edit</button>
                   <button class="btn btn-sm btn-danger" (click)="deleteBlog(blog.id)">Delete</button>
-                </div>
+                </div>}
               </td>
             </tr>
             <tr *ngIf="blogs.length === 0">
